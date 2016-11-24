@@ -6,8 +6,22 @@ output: ioslides_presentation
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+library(knitr)
+#knitr::opts_chunk$set(echo = T)
 ```
+
+## What is database?
+
+- Database is a collection of related dataframes (tables);
+- GEMINI uses SQLite database which does not require database server or database engine;
+- database slang:
+    + dataframe = table
+    + column = field
+    + select * from [table_name] where [condition];
+- Gemini Database Schema
+  http://gemini.readthedocs.io/en/latest/content/database_schema.html
+- Web Interface to plot database schemas:
+  http://ondras.zarovi.cz/sql/demo/?keyword=default
 
 ## How to load your variants into the GEMINI database?
 
@@ -18,16 +32,42 @@ knitr::opts_chunk$set(echo = FALSE)
     + vcf2db.py 
 - Use bcbio pipeline system – it outputs GEMINI and vcf.
 
-## Slide with Bullets
+## Bcbio pipelines
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+- open source, community supported
+- developed mainly by Harvard T.Chan Medical School Bioinformatics Core
+- validated
+- well documented
+- Pipelines
+```{r pipelines,echo=F}
+pipelines=data.frame(c("variant calling","cancer","structural variant calling","RNA-seq","smallRNA-seq","ChIP-seq"))
+kable(pipelines)
+```
+- Resources
+    + https://bcbio-nextgen.readthedocs.io/en/latest/
+    + https://github.com/chapmanb/bcbio-nextgen
+    + https://bcb.io
+
+## Example queries
+select gene,transcript from gene_detailed where gene='AGRN';
+select variant_id,gene,transcript from variant_impacts where variant_id=2;
+
+## Additional columns not present in GEMINI
+
+- UCSC hyperlink
+- OMIM gene description (registration required)
+- Orphanet status
+- exac pLi score
+- exec missense score
+- phastcons score
+- imprinting status
+- information from HGMD database (public version is unusable, pro version is pricy)
+- pseudoatosomal gene
 
 ## Slide with R Output
 
 ```{r cars, echo = TRUE}
-summary(cars)
+kable(summary(cars))
 ```
 
 ## Slide with Plot
