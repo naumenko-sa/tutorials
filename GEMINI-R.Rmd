@@ -1,0 +1,38 @@
+---
+title: "Exploring genome variation using GEMINI framework in R"
+author: "Sergey Naumenko, CCM Bioinformatics Training series"
+date: "November 30, 2016"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## How to load your variants into the GEMINI database?
+
+- Ask your bioinformatics provider to send results in the GEMINI format;
+- Ask CCM to convert vcf2gemini;
+- Convert
+    + gemini load (linux);
+    + vcf2db.py 
+- Use bcbio pipeline system – it outputs GEMINI and vcf.
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+
