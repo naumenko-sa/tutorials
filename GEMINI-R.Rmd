@@ -7,8 +7,77 @@ output: ioslides_presentation
 
 ```{r setup, include=FALSE}
 library(knitr)
+library(grid)
 #knitr::opts_chunk$set(echo = T)
 ```
+
+## 'Lazy bioinformatics' approach
+
+```{r echo=F}
+grid.roundrect(width=.25,height=.25,x=0.25,y=0.75)
+grid.text("Raw sequencing \n data",x=0.25,y=0.75)
+
+grid.move.to(0.4, .75)
+grid.line.to(0.6, .75,arrow = arrow(angle=15))
+
+grid.roundrect(width=.25,height=.25,x=0.75,y=0.75)
+grid.text("Data processing \n with pipelines",x=0.75,y=0.75)
+
+grid.move.to(0.75, .6)
+grid.line.to(0.75, .4,arrow = arrow(angle=15))
+
+grid.roundrect(width=.25,height=.25,x=0.75,y=0.25)
+grid.text("Analysis in R",x=0.75,y=0.25)
+
+grid.move.to(0.6, .25)
+grid.line.to(0.4, .25,arrow = arrow(angle=15))
+
+grid.roundrect(width=.25,height=.25,x=0.25,y=0.25)
+grid.text("Reading & Writing",x=0.25,y=0.25)
+
+grid.move.to(0.25, .4)
+grid.line.to(0.25, .6,arrow = arrow(angle=15))
+```
+
+Only possible for simple analyses: Variants in WES, DE and variants in RNA-seq
+
+## What could we say about this variant?
+
+### chr19 38976331 G A
+
+## What should we figure out first?
+
+![http://www.pnas.org/content/109/37/14942](phylogeny.jpg =200x100)
+
+Song S, Liu L, Edwards SV, Wu S. Resolving conflict in eutherian mammal
+phylogeny using phylogenomics and the multispecies coalescent model. Proc Natl
+Acad Sci U S A. 2012 Sep 11;109(37):14942-7. doi: 10.1073/pnas.1211733109.
+Erratum in: Proc Natl Acad Sci U S A. 2015 Nov 3;112(44):E6079. PubMed PMID:
+22930817; PubMed Central PMCID: PMC3443116.
+
+## What should we figure out second?
+
+* ![](https://www.ncbi.nlm.nih.gov/grc/human)
+* http://grch37.ensembl.org
+* http://www.ensembl.org/index.html
+
+## Ensembl Variant Effect Predictor
+
+http://grch37.ensembl.org/Homo_sapiens/Tools/VEP
+
+### Other options
+* SNPeff
+* Annovar
+
+## What if we have more than one variant?
+
+* Shamil's Article
+* clunky vcf file
+
+## How to organize this information in a neat format?
+
+* ### Use dataframe in R
+* ### or even a database
 
 ## What is database?
 
@@ -18,10 +87,12 @@ library(knitr)
     + dataframe = table
     + column = field
     + select * from [table_name] where [condition];
-- Gemini Database Schema
-  http://gemini.readthedocs.io/en/latest/content/database_schema.html
 - Web Interface to plot database schemas:
   http://ondras.zarovi.cz/sql/demo/?keyword=default
+
+## Gemini database schema  
+
+![http://gemini.readthedocs.io/en/latest/content/database_schema.html](gemini_schema.png)
 
 ## How to load your variants into the GEMINI database?
 
@@ -64,15 +135,5 @@ select variant_id,gene,transcript from variant_impacts where variant_id=2;
 - information from HGMD database (public version is unusable, pro version is pricy)
 - pseudoatosomal gene
 
-## Slide with R Output
-
-```{r cars, echo = TRUE}
-kable(summary(cars))
-```
-
-## Slide with Plot
-
-```{r pressure}
-plot(pressure)
-```
+## Are you ready to analysis like ExAC?
 
