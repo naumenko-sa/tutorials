@@ -45,19 +45,14 @@ Only possible for simple analyses: Variants in WES, DE and variants in RNA-seq
 
 ### chr19 38976331 G A
 
-## What should we figure out first?
+## chr19 38976331 G A
+### What should we figure out first?
 
-![http://www.pnas.org/content/109/37/14942](phylogeny.jpg =200x100)
+* Species: _H.sapiens_, _Mus musculus_, _Drosophila melanogaster_? 
 
-Song S, Liu L, Edwards SV, Wu S. Resolving conflict in eutherian mammal
-phylogeny using phylogenomics and the multispecies coalescent model. Proc Natl
-Acad Sci U S A. 2012 Sep 11;109(37):14942-7. doi: 10.1073/pnas.1211733109.
-Erratum in: Proc Natl Acad Sci U S A. 2015 Nov 3;112(44):E6079. PubMed PMID:
-22930817; PubMed Central PMCID: PMC3443116.
+### What should we figure out second?
 
-## What should we figure out second?
-
-* ![](https://www.ncbi.nlm.nih.gov/grc/human)
+* https://www.ncbi.nlm.nih.gov/grc/human
 * http://grch37.ensembl.org
 * http://www.ensembl.org/index.html
 
@@ -69,15 +64,50 @@ http://grch37.ensembl.org/Homo_sapiens/Tools/VEP
 * SNPeff
 * Annovar
 
+## dbSNP
+### Look for rs146504767
+https://www.ncbi.nlm.nih.gov/projects/SNP/
+
+##Human Gene Mutation Database (HGMD)
+* RYR1
+* CM104331
+* http://www.hgmd.cf.ac.uk
+* Pro version is much better but pricy.
+
 ## What if we have more than one variant?
 
-* Shamil's Article
+* [Stitziel et al. Computational and statistical approaches to analyzing variants identified by exome sequencing](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2011-12-9-227)
+* [Exome aggregation consortium](http://www.nature.com/nature/journal/v536/n7616/full/nature19057.html)
 * clunky vcf file
+
+~~~
+1	15211	.	T	G	1007.35	PASS AB=0;ABP=0;AC=2;AF=1;AN=2;ANN=G|
+downstream_gene_variant|MODIFIER|DDX11L1|ENSG00000223972|transcript|
+ENST00000456328|processed_transcript||n.*802T>G|||||802|,G|downstream_gene_variant|
+MODIFIER|DDX11L1|ENSG00000223972|transcript|ENST00000515242|transcribed_unprocessed_pseudogene|
+|n.*799T>G|||||799|,G|downstream_gene_variant|MODIFIER|DDX11L1|ENSG00000223972|transcript|
+ENST00000518655|transcribed_unprocessed_pseudogene||n.*802T>G|||||802|,G|downstream_gene_variant|
+MODIFIER|DDX11L1|ENSG00000223972|transcript|ENST00000450305|transcribed_unprocessed_pseudogene|
+|n.*1541T>G|||||1541|,G|intron_variant|MODIFIER|WASH7P|ENSG00000227232|transcript|ENST00000438504
+|unprocessed_pseudogene|10/11|n.1248-173A>C||||||,G|intron_variant|MODIFIER|WASH7P|ENSG00000227232
+|transcript|ENST00000541675|unprocessed_pseud>ogene|7/8|n.881-173A>C||||||,G|intron_variant|MODIFIER
+|WASH7P|ENSG00000227232|transcript|ENST00000423562|unprocessed_pseudogene|8/9|n.1134-173A>C|||||
+|,G|intron_variant|MODIFIER|WASH7P|ENSG00000227232>|transcript|ENST00000488147|unprocessed_pseudogene|9/10|n.1220-173A>C||||||,G|intron_variant|MODIFIER|WASH7P|ENSG00000227232|transcript
+|ENST00000538476|unprocessed_pseudogene|11/12|n.1453-173A>C|||||
+|;AO=50;CALLERS=freebayes,samtools;CIGAR=1X;DP=52;DPB=52;DPRA=0;EPP=14.1282;EPPR=7.35324;GTI=0;
+LEN=1;MEANALT=1;MQM=25.2;MQMR=14;NS=1;NUMALT=1;ODDS=67.5514;PAIRED=0.98;PAIREDR=1;PAO=0;PQA=0;PQR=0;
+PRO=0;QA=1735;QR=70;RO=2;RPL=23;RPP=3.70517;RPPR=7.35324;RPR=27;RUN=1;SAF=14;SAP=24.0302;SAR=36;
+SRF=0;SRP=7.35324;SRR=2;TYPE=snp;technology.illumina=1	GT:GQ:DP:RO:QR:AO:QA:GL	1/1:160:52:2:70:50:1735:-105.084,-13,0
+~~~
 
 ## How to organize this information in a neat format?
 
 * ### Use dataframe in R
 * ### or even a database
+* #### https://gemini.readthedocs.io/en/latest/
+* #### Paila U, Chapman BA, Kirchner R, Quinlan AR (2013)
+GEMINI: Integrative Exploration of Genetic Variation and Genome Annotations.
+PLoS Comput Biol 9(7): e1003153. doi:10.1371/journal.pcbi.1003153 cited by 74
 
 ## What is database?
 
@@ -103,23 +133,8 @@ http://grch37.ensembl.org/Homo_sapiens/Tools/VEP
     + vcf2db.py 
 - Use bcbio pipeline system – it outputs GEMINI and vcf.
 
-## Bcbio pipelines
-
-- open source, community supported
-- developed mainly by Harvard T.Chan Medical School Bioinformatics Core
-- validated
-- well documented
-- Pipelines
-```{r pipelines,echo=F}
-pipelines=data.frame(c("variant calling","cancer","structural variant calling","RNA-seq","smallRNA-seq","ChIP-seq"))
-kable(pipelines)
-```
-- Resources
-    + https://bcbio-nextgen.readthedocs.io/en/latest/
-    + https://github.com/chapmanb/bcbio-nextgen
-    + https://bcb.io
-
 ## Example queries
+
 select gene,transcript from gene_detailed where gene='AGRN';
 select variant_id,gene,transcript from variant_impacts where variant_id=2;
 
@@ -135,5 +150,28 @@ select variant_id,gene,transcript from variant_impacts where variant_id=2;
 - information from HGMD database (public version is unusable, pro version is pricy)
 - pseudoatosomal gene
 
+## Gemini development
+
+* compressed blob issue - loader
+* multiuser : mysql, postgres
+* additional fields
+* https://github.com/arq5x/gemini
+* huge size of sqlite3 - autovacuum.
+
 ## Are you ready to analysis like ExAC?
 
+## Bcbio pipelines
+
+- open source, community supported
+- developed mainly by Harvard T.Chan Medical School Bioinformatics Core
+- validated
+- well documented
+- Pipelines
+```{r pipelines,echo=F}
+pipelines=data.frame(c("variant calling","cancer","structural variant calling","RNA-seq","smallRNA-seq","ChIP-seq"))
+kable(pipelines)
+```
+- Resources
+    + https://bcbio-nextgen.readthedocs.io/en/latest/
+    + https://github.com/chapmanb/bcbio-nextgen
+    + https://bcb.io
