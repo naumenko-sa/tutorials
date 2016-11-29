@@ -147,7 +147,7 @@ http://gemini.readthedocs.io/en/latest/content/database_schema.html
 - Ask your bioinformatics provider to send results in the GEMINI format;
 - Ask CCM to convert vcf2gemini;
 - Convert
-    + [with gemini load (linux)](http://gemini.readthedocs.io/en/latest/content/preprocessing.html);
+    + [with gemini load (linux)](http://gemini.readthedocs.io/en/latest/content/preprocessing.html)
     + [vcf2db.py](https://github.com/quinlan-lab/vcf2db) 
 - Use bcbio pipeline system – it outputs GEMINI and vcf.
 
