@@ -50,7 +50,7 @@ grid.move.to(0.25, .4)
 grid.line.to(0.25, .6,arrow = arrow(angle=15))
 ```
 
-Only possible for simple analyses: Variants in whole exome sequenceing, RNA-seq, Differential Expression
+Only possible for simple analyses: Variants in whole exome sequencing, RNA-seq, Differential Expression
 
 ## What could we say about this variant?
 
@@ -113,13 +113,13 @@ SRF=0;SRP=7.35324;SRR=2;TYPE=snp;technology.illumina=1	GT:GQ:DP:RO:QR:AO:QA:GL	1
 
 ## How to organize this information in a neat format?
 
-* ### Use dataframe in R
-* ### or even a database
-* #### https://gemini.readthedocs.io/en/latest/
-* #### Paila U, Chapman BA, Kirchner R, Quinlan AR (2013)
+* Use dataframe in R or even a database
+* GEMINI database
+    + https://gemini.readthedocs.io/en/latest/
+    + Paila U, Chapman BA, Kirchner R, Quinlan AR (2013)
 GEMINI: Integrative Exploration of Genetic Variation and Genome Annotations.
 PLoS Comput Biol 9(7): e1003153. doi:10.1371/journal.pcbi.1003153 cited by 74
-* http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003153
+    + http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003153
 
 ## What is database?
 
@@ -134,7 +134,8 @@ PLoS Comput Biol 9(7): e1003153. doi:10.1371/journal.pcbi.1003153 cited by 74
 
 ## Gemini database schema  
 
-![http://gemini.readthedocs.io/en/latest/content/database_schema.html](gemini_schema.png)
+![](gemini_schema.png)
+http://gemini.readthedocs.io/en/latest/content/database_schema.html
 
 ## Gemini detailed
 * [Gemini framework](http://journals.plos.org/ploscompbiol/article/figure/image?size=large&download=&id=10.1371/journal.pcbi.1003153.g001)
@@ -164,10 +165,6 @@ PLoS Comput Biol 9(7): e1003153. doi:10.1371/journal.pcbi.1003153 cited by 74
     + https://github.com/chapmanb/bcbio-nextgen
     + https://bcb.io
 
-## Let us try GEMINI!
-
-https://github.com/naumenko-sa/tutorials/blob/master/gemini_tutorial.R
-
 ## 'Lazy bioinformatics' approach
 
 ```{r echo=F}
@@ -196,7 +193,11 @@ grid.move.to(0.25, .4)
 grid.line.to(0.25, .6,arrow = arrow(angle=15))
 ```
 
-Only possible for simple analyses: Variants in whole exome sequenceing, RNA-seq, Differential Expression
+Only possible for simple analyses: Variants in whole exome sequencing, RNA-seq, Differential Expression
+
+## Let us try GEMINI!
+
+https://github.com/naumenko-sa/tutorials/blob/master/gemini_tutorial.R
 
 ## Additional columns not present in GEMINI
 
