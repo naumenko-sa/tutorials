@@ -215,8 +215,8 @@ https://github.com/naumenko-sa/tutorials/blob/master/gemini_tutorial.R
 * Solution: 
     + gemini2txt first and then load to R 
     https://github.com/naumenko-sa/bioscripts/blob/master/gemini2txt.single_sample.mh.sh
-    + use new loader vcf2db.py
-    
+    + use new loader https://github.com/quinlan-lab/vcf2db
+
 ## More tutorials on GEMINI from Aaron Quinlan 
 
 https://speakerdeck.com/arq5x/
