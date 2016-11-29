@@ -41,7 +41,7 @@ qryReport=paste0("select
         v.exac_num_hom_alt as Exac_hom_alt,
         v.sift_score as Sift_score,
         v.polyphen_score as Polyphen_score,
-        v.cadd_scaled as Cadd_score
+        v.cadd_scaled as Cadd_score,
         v.aa_change as AA_change
         from variants v, gene_detailed g
         where v.transcript=g.transcript and v.gene=g.gene");
@@ -69,5 +69,17 @@ gene_detailed = dbGetQuery(con,qryGenes)
 
 qryGene_summary = "select * from gene_summary"
 gene_summary = dbGetQuery(con,qryGene_summary)
+
+#additional information
+#gene descriptions
+#reference_tables_path="~/Desktop/reference_tables"
+reference_tables_path=getwd()
+
+gene_descriptions = read.delim2(paste0(reference_tables_path,"/ensembl_w_description.txt"), stringsAsFactors=FALSE)
+variants = merge(variants,gene_descriptions,by.x = "Ensembl_gene_id",by.y = "ensembl_gene_id",all.x=T)
+
+#ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3.1/functional_gene_constraint/README_fordist_cleaned_exac_r03_z_data_pLI_2016_01_13.txt
+exac_scores = read.delim(paste0(reference_tables_path,"/exac_scores.txt"), stringsAsFactors=F)
+variants = merge(variants,exac_scores,all.x=T)
 
 dbDisconnect(con)

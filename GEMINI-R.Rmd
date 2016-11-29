@@ -12,12 +12,15 @@ library(grid)
 ```
 
 ## Prerequisites
-
 * R and R-studio
 * Download and decompress GEMINI database (large file, 83MB)
 https://drive.google.com/open?id=0B_bLL10GwDnsaXNNOW5EUDV0QjQ
-* Install packages: RSQLite
-* Tutorial R code: 
+* Download ad decompress additional tables
+https://drive.google.com/open?id=0B_bLL10GwDnsblgySWZjeHFFSUE
+* Install packages: RSQLite, plyr
+* Explore documentation: http://gemini.readthedocs.io/en/latest/
+* Read the article: http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003153
+* R code for the tutorial: https://github.com/naumenko-sa/tutorials/blob/master/gemini_tutorial.R
 
 ## 'Lazy bioinformatics' approach
 
@@ -116,6 +119,7 @@ SRF=0;SRP=7.35324;SRR=2;TYPE=snp;technology.illumina=1	GT:GQ:DP:RO:QR:AO:QA:GL	1
 * #### Paila U, Chapman BA, Kirchner R, Quinlan AR (2013)
 GEMINI: Integrative Exploration of Genetic Variation and Genome Annotations.
 PLoS Comput Biol 9(7): e1003153. doi:10.1371/journal.pcbi.1003153 cited by 74
+* http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003153
 
 ## What is database?
 
@@ -132,39 +136,19 @@ PLoS Comput Biol 9(7): e1003153. doi:10.1371/journal.pcbi.1003153 cited by 74
 
 ![http://gemini.readthedocs.io/en/latest/content/database_schema.html](gemini_schema.png)
 
+## Gemini detailed
+* [Gemini framework](http://journals.plos.org/ploscompbiol/article/figure/image?size=large&download=&id=10.1371/journal.pcbi.1003153.g001)
+* [Gemini tools](http://journals.plos.org/ploscompbiol/article/figure/image?size=large&download=&id=10.1371/journal.pcbi.1003153.g002)
+* [Gemini web interface](http://journals.plos.org/ploscompbiol/article/figure/image?size=large&download=&id=10.1371/journal.pcbi.1003153.g003)
+
 ## How to load your variants into the GEMINI database?
 
 - Ask your bioinformatics provider to send results in the GEMINI format;
 - Ask CCM to convert vcf2gemini;
 - Convert
-    + gemini load (linux);
+    + [with gemini load (linux)](http://gemini.readthedocs.io/en/latest/content/preprocessing.html);
     + vcf2db.py 
 - Use bcbio pipeline system – it outputs GEMINI and vcf.
-
-## Example queries
-
-select gene,transcript from gene_detailed where gene='AGRN';
-select variant_id,gene,transcript from variant_impacts where variant_id=2;
-
-## Additional columns not present in GEMINI
-
-- UCSC hyperlink
-- OMIM gene description (registration required)
-- Orphanet status
-- exac pLi score
-- exec missense score
-- phastcons score
-- imprinting status
-- information from HGMD database (public version is unusable, pro version is pricy)
-- pseudoatosomal gene
-
-## Gemini development
-
-* compressed blob issue - loader
-* multiuser : mysql, postgres
-* additional fields
-* https://github.com/arq5x/gemini
-* huge size of sqlite3 - autovacuum.
 
 ## Bcbio pipelines
 
@@ -172,12 +156,31 @@ select variant_id,gene,transcript from variant_impacts where variant_id=2;
 - developed mainly by Harvard T.Chan Medical School Bioinformatics Core
 - validated
 - well documented
-- Pipelines
-```{r pipelines,echo=F}
-pipelines=data.frame(c("variant calling","cancer","structural variant calling","RNA-seq","smallRNA-seq","ChIP-seq"))
-kable(pipelines)
-```
+- Pipelines supported: (variant calling,cancer variants,structural variants, RNA-seq,smallRNA-seq,ChIP-seq")
+
 - Resources
     + https://bcbio-nextgen.readthedocs.io/en/latest/
     + https://github.com/chapmanb/bcbio-nextgen
     + https://bcb.io
+
+## Let us try GEMINI!
+
+https://github.com/naumenko-sa/tutorials/blob/master/gemini_tutorial.R
+
+## Additional columns not present in GEMINI
+
+- OMIM gene description (registration required)
+- Orphanet status
+- exac pLi score
+- exec missense score
+- imprinting status
+- pseudoautosomal genes
+
+## GTS field problem
+
+* Gemini stores genotype information in the python-specific compressed format
+* It is not possible to decompress in R
+* Solution: 
+    + gemini2txt first and then load to R 
+    https://github.com/naumenko-sa/bioscripts/blob/master/gemini2txt.single_sample.mh.sh
+    + use new loader vcf2db.py
