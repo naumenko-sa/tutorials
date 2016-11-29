@@ -50,7 +50,7 @@ grid.move.to(0.25, .4)
 grid.line.to(0.25, .6,arrow = arrow(angle=15))
 ```
 
-Only possible for simple analyses: Variants in WES, DE and variants in RNA-seq
+Only possible for simple analyses: Variants in whole exome sequenceing, RNA-seq, Differential Expression
 
 ## What could we say about this variant?
 
@@ -156,6 +156,7 @@ PLoS Comput Biol 9(7): e1003153. doi:10.1371/journal.pcbi.1003153 cited by 74
 - developed mainly by Harvard T.Chan Medical School Bioinformatics Core
 - validated
 - well documented
+- easy to install and run
 - Pipelines supported: (variant calling,cancer variants,structural variants, RNA-seq,smallRNA-seq,ChIP-seq")
 
 - Resources
@@ -167,20 +168,54 @@ PLoS Comput Biol 9(7): e1003153. doi:10.1371/journal.pcbi.1003153 cited by 74
 
 https://github.com/naumenko-sa/tutorials/blob/master/gemini_tutorial.R
 
+## 'Lazy bioinformatics' approach
+
+```{r echo=F}
+grid.roundrect(width=.25,height=.25,x=0.25,y=0.75)
+grid.text("Fastq or BAM files",x=0.25,y=0.75)
+
+grid.move.to(0.4, .75)
+grid.line.to(0.6, .75,arrow = arrow(angle=15))
+
+grid.roundrect(width=.25,height=.25,x=0.75,y=0.75)
+grid.text("BCBIO \n makes \n gemini.db",x=0.75,y=0.75)
+
+grid.move.to(0.75, .6)
+grid.line.to(0.75, .4,arrow = arrow(angle=15))
+
+grid.roundrect(width=.25,height=.25,x=0.75,y=0.25)
+grid.text("Analysis in R",x=0.75,y=0.25)
+
+grid.move.to(0.6, .25)
+grid.line.to(0.4, .25,arrow = arrow(angle=15))
+
+grid.roundrect(width=.25,height=.25,x=0.25,y=0.25)
+grid.text("Reading & Writing",x=0.25,y=0.25)
+
+grid.move.to(0.25, .4)
+grid.line.to(0.25, .6,arrow = arrow(angle=15))
+```
+
+Only possible for simple analyses: Variants in whole exome sequenceing, RNA-seq, Differential Expression
+
 ## Additional columns not present in GEMINI
 
 - OMIM gene description (registration required)
 - Orphanet status
 - exac pLi score
-- exec missense score
+- exac missense score
 - imprinting status
 - pseudoautosomal genes
 
 ## GTS field problem
 
 * Gemini stores genotype information in the python-specific compressed format
-* It is not possible to decompress in R
+* It is not easy to decompress in R
 * Solution: 
     + gemini2txt first and then load to R 
     https://github.com/naumenko-sa/bioscripts/blob/master/gemini2txt.single_sample.mh.sh
     + use new loader vcf2db.py
+    
+## More tutorials on GEMINI from Aaron Quinlan 
+
+https://speakerdeck.com/arq5x/
