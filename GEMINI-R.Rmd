@@ -11,6 +11,14 @@ library(grid)
 #knitr::opts_chunk$set(echo = T)
 ```
 
+## Prerequisites
+
+* R and R-studio
+* Download and decompress GEMINI database (large file, 83MB)
+https://drive.google.com/open?id=0B_bLL10GwDnsaXNNOW5EUDV0QjQ
+* Install packages: RSQLite
+* Tutorial R code: 
+
 ## 'Lazy bioinformatics' approach
 
 ```{r echo=F}
@@ -157,8 +165,6 @@ select variant_id,gene,transcript from variant_impacts where variant_id=2;
 * additional fields
 * https://github.com/arq5x/gemini
 * huge size of sqlite3 - autovacuum.
-
-## Are you ready to analysis like ExAC?
 
 ## Bcbio pipelines
 
