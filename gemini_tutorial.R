@@ -65,7 +65,7 @@ barplot(effects.no_intronic$freq,names.arg = effects.no_intronic$Variation,las=2
 par(op)
 
 qryGene_detailed = "select * from gene_detailed"
-gene_detailed = dbGetQuery(con,qryGenes)
+gene_detailed = dbGetQuery(con,qryGene_detailed)
 
 qryGene_summary = "select * from gene_summary"
 gene_summary = dbGetQuery(con,qryGene_summary)
