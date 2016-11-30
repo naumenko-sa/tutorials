@@ -15,7 +15,7 @@ library(grid)
 * R and R-studio
 * Download and decompress GEMINI database (large file, 83MB)
 https://drive.google.com/open?id=0B_bLL10GwDnsaXNNOW5EUDV0QjQ
-* Download ad decompress additional tables
+* Download and decompress additional tables
 https://drive.google.com/open?id=0B_bLL10GwDnsblgySWZjeHFFSUE
 * Install packages: RSQLite, plyr
 * Explore documentation: http://gemini.readthedocs.io/en/latest/
@@ -158,7 +158,7 @@ http://gemini.readthedocs.io/en/latest/content/database_schema.html
 - validated
 - well documented
 - easy to install and run
-- Pipelines supported: (variant calling,cancer variants,structural variants, RNA-seq,smallRNA-seq,ChIP-seq")
+- Pipelines supported: (variant calling,cancer variants,structural variants, RNA-seq,smallRNA-seq,ChIP-seq)
 
 - Resources
     + https://bcbio-nextgen.readthedocs.io/en/latest/
