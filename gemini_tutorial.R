@@ -8,6 +8,7 @@ library(RSQLite)
 library(plyr)
 
 dbname="NA12878-1-ensemble.db"
+dbname="1130-BD-B175-gatk-haplotype.db"
 
 con = dbConnect(RSQLite::SQLite(),dbname=dbname)
 
@@ -81,5 +82,16 @@ variants = merge(variants,gene_descriptions,by.x = "Ensembl_gene_id",by.y = "ens
 #ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3.1/functional_gene_constraint/README_fordist_cleaned_exac_r03_z_data_pLI_2016_01_13.txt
 exac_scores = read.delim(paste0(reference_tables_path,"/exac_scores.txt"), stringsAsFactors=F)
 variants = merge(variants,exac_scores,all.x=T)
+
+qryAllTranscriptsAffected = "select v.chrom, v.start+1,v.end, v.ref, v.alt,
+                                    v.gene,vi.gene,
+                                    v.transcript,
+                                    vi.transcript,
+                                    vi.aa_change,
+                                    vi.aa_length 
+                             from variant_impacts vi, variants v 
+                             where vi.variant_id=v.variant_id and
+                                   v.is_coding = 1"
+all_coding_effects = dbGetQuery(con,qryAllTranscriptsAffected)
 
 dbDisconnect(con)
