@@ -1,1 +1,0 @@
-../../reference_tables/exac_scores.txt

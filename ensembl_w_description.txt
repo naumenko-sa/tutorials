@@ -1,1 +1,0 @@
-../../reference_tables/ensembl_w_description.txt
