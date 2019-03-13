@@ -1,6 +1,6 @@
 # tutorials I taught
 
-* [Variant calling and annotation tutorial](https://gist.github.com/naumenko-sa/82df1cb7d9b5f64691bf437f0eb455f0), [lecture slides](https://drive.google.com/open?id=158TJQTiluXCbTEcasNp0WfTylhykwtAk): Genomics in Medicine bioinformatics.ca workshop, module 3, McGill, Montreal, 2018-06-13. \
+* Variant calling and annotation tutorial ([gist](https://gist.github.com/naumenko-sa/82df1cb7d9b5f64691bf437f0eb455f0), [lecture slides](https://drive.google.com/open?id=158TJQTiluXCbTEcasNp0WfTylhykwtAk)): Genomics in Medicine bioinformatics.ca workshop, module 3, McGill, Montreal, 2018-06-13. \
 ~4h tutorial: small bcbio WES run, VEP, gemini, gemini queries, HPC, excel reports, variants prioritization, IGV. Bonus: how to become a bioinf pro with 4 tools.
 * [Genome analysis sequencing tutorial](https://docs.google.com/presentation/d/1DR4iIY59p40pk404gv-QZqUhg4hpinMdT_Ub9UMR7wg/edit?usp=sharing):CCM bioinformatics Tutorials, 2018-03-16, Toronto
 R, R-studio, gemini.db, RSQLite, tidyverse, bcbio.
