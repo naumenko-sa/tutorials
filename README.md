@@ -7,7 +7,8 @@ Genomics in Medicine bioinformatics.ca workshop, module 3, McGill, Montreal, 201
 * [Elements of variant analysis](https://docs.google.com/presentation/d/1DR4iIY59p40pk404gv-QZqUhg4hpinMdT_Ub9UMR7wg/edit?usp=sharing).
 CCM bioinformatics tutorials for biologists, Hospital for Sick Children, Toronto, 2018-03-16.\
 IGV, iobio.io toolkit, vcf>vep>gemini, bcbio example run.
-* [IGV, iobio toolkit, RNA-seq data analysis: GSEA](https://docs.google.com/presentation/d/1RRnTsTWYn-Yo5OahbFj4F4ViWPuHIvMkzfYrOqxutv0/edit?usp=sharing)CCM bioinformatics tutorial for biologists, Hospital for Sick Children, Toronto, 2017-04-28.
+* [Visualization of bam, vcf (QC), gene set enrichment analysis of RNA-seq data](https://docs.google.com/presentation/d/1RRnTsTWYn-Yo5OahbFj4F4ViWPuHIvMkzfYrOqxutv0/edit?usp=sharing)\
+CCM bioinformatics tutorial for biologists, Hospital for Sick Children, Toronto, 2017-04-28.
 IGV, iobio.io toolkit, a bit of RNA-seq and GSEA.
 * [Exploring small variants with GEMINI database in R](https://docs.google.com/presentation/d/1DQ0dInX2VXSYE137nOzgeFKVOv5Ww5OBIENjBZRQDr0/edit?usp=sharing).
 CCM bioinformatics tutorials for biologists, Hospital for Sick Children, Toronto, 2016-11-30, updated in 2019.
