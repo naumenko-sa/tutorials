@@ -2,6 +2,8 @@
 
 * [**The basics of IGV**](https://docs.google.com/presentation/d/1dUNRB76aZpQgJjPqR_nhzPKztfd9uV5biOTprONc7MU/edit?usp=sharing)\
 Session 8 in DNA-seq bootcamp 2019, CCM, Hospital for Sick Children, Toronto, 2019-03-15.
+* [**Real time genomics analysis with iobio.io toolkit**](https://docs.google.com/presentation/d/1PdSo2VvHyMDbiX_tMLWkxOYLCpYE4dA0HCjmg56LCmo/edit?usp=sharing])\
+Session 8 in DNA-seq bootcamp 2019, CCM, Hospital for Sick Children, Toronto, 2019-03-15.
 
 ## Variant annotation series
 * **Variant calling and annotation** ([gist](https://gist.github.com/naumenko-sa/82df1cb7d9b5f64691bf437f0eb455f0), [slides](https://drive.google.com/open?id=158TJQTiluXCbTEcasNp0WfTylhykwtAk)).\
@@ -10,7 +12,7 @@ Genomics in Medicine bioinformatics.ca workshop, module 3, McGill, Montreal, 201
 * **Elements of variant analysis.**\
 CCM bioinformatics tutorials for biologists, Hospital for Sick Children, Toronto, 2018-03-16.\
 IGV, iobio.io toolkit, vcf>vep>gemini, bcbio example run.\
-*Obsolete, developed into IGV tutorial and updated for Montreal tutorial*
+*Obsolete, developed into IGV, iobio, and Montreal tutorials*
 * [Visualization of bam, vcf (QC), gene set enrichment analysis of RNA-seq data](https://docs.google.com/presentation/d/1RRnTsTWYn-Yo5OahbFj4F4ViWPuHIvMkzfYrOqxutv0/edit?usp=sharing)\
 CCM bioinformatics tutorial for biologists, Hospital for Sick Children, Toronto, 2017-04-28.
 IGV, iobio.io toolkit, a bit of RNA-seq and GSEA.
