@@ -7,9 +7,10 @@ Session 8 in DNA-seq bootcamp 2019, CCM, Hospital for Sick Children, Toronto, 20
 * Variant calling and annotation tutorial ([gist](https://gist.github.com/naumenko-sa/82df1cb7d9b5f64691bf437f0eb455f0), [slides](https://drive.google.com/open?id=158TJQTiluXCbTEcasNp0WfTylhykwtAk)).\
 Genomics in Medicine bioinformatics.ca workshop, module 3, McGill, Montreal, 2018-06-13. \
 ~4h tutorial: small bcbio WES run, VEP, gemini, gemini queries, HPC, excel reports, variants prioritization, IGV. Bonus: how to become a bioinf pro with 4 tools.
-* [Elements of variant analysis](https://docs.google.com/presentation/d/1DR4iIY59p40pk404gv-QZqUhg4hpinMdT_Ub9UMR7wg/edit?usp=sharing).
+* Elements of variant analysis.\
 CCM bioinformatics tutorials for biologists, Hospital for Sick Children, Toronto, 2018-03-16.\
-IGV, iobio.io toolkit, vcf>vep>gemini, bcbio example run.
+IGV, iobio.io toolkit, vcf>vep>gemini, bcbio example run.\
+*Obsolete, developed into IGV tutorial and updated for Montreal tutorial*
 * [Visualization of bam, vcf (QC), gene set enrichment analysis of RNA-seq data](https://docs.google.com/presentation/d/1RRnTsTWYn-Yo5OahbFj4F4ViWPuHIvMkzfYrOqxutv0/edit?usp=sharing)\
 CCM bioinformatics tutorial for biologists, Hospital for Sick Children, Toronto, 2017-04-28.
 IGV, iobio.io toolkit, a bit of RNA-seq and GSEA.
