@@ -5,7 +5,8 @@ Session 8 in DNA-seq bootcamp 2019, CCM, Hospital for Sick Children, Toronto, 20
 * [**Real time genomics analysis with iobio.io toolkit**](https://docs.google.com/presentation/d/1PdSo2VvHyMDbiX_tMLWkxOYLCpYE4dA0HCjmg56LCmo/edit?usp=sharing])\
 Session 8 in DNA-seq bootcamp 2019, CCM, Hospital for Sick Children, Toronto, 2019-03-15.
 
-## Variant annotation series
+## Variant annotation and prioritization series
+* [Small and structural variant prioritization in R with tidyverse](https://docs.google.com/presentation/d/1SBeRCSlwfsLOLvx5fSDHd1sM2Hu3lwgDSB__TAduuSg/edit?usp=sharing)
 * **Variant calling and annotation** ([gist](https://gist.github.com/naumenko-sa/82df1cb7d9b5f64691bf437f0eb455f0), [slides](https://drive.google.com/open?id=158TJQTiluXCbTEcasNp0WfTylhykwtAk)).\
 Genomics in Medicine bioinformatics.ca workshop, module 3, McGill, Montreal, 2018-06-13. \
 ~4h tutorial: small bcbio WES run, VEP, gemini, gemini queries, HPC, excel reports, variants prioritization, IGV. Bonus: how to become a bioinf pro with 4 tools.
@@ -19,7 +20,6 @@ IGV, iobio.io toolkit, a bit of RNA-seq and GSEA.
 * [**Exploring small variants with GEMINI database in R**](https://docs.google.com/presentation/d/1DQ0dInX2VXSYE137nOzgeFKVOv5Ww5OBIENjBZRQDr0/edit?usp=sharing).
 CCM bioinformatics tutorials for biologists, Hospital for Sick Children, Toronto, 2016-11-30, updated in 2019.\
 R, R-studio, gemini.db, RSQLite, tidyverse, bcbio.
-
 
 ## BiomaRt series
 * [**Genomics in R: genes, regions, variants (biomaRt, VariantAnnotation, TopMed)**](https://docs.google.com/presentation/d/1rTG-FDQ9y8c8e6cO1WdVwq0_BF_R1VRrjTgUD1Vmv54/edit?usp=sharing).\
