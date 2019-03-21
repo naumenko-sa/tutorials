@@ -4,56 +4,26 @@
 
 # installation
 # install.packages("tidyverse")
+# install.packages("googledrive")
 
-setwd("~/Desktop/teaching_n_learning/tutorials/2019-03-22_variant_prioritization/")
-
-library(DBI)
 library(tidyverse)
 
-# download example database and additional files from:
-# https://drive.google.com/drive/folders/0B_bLL10GwDnsVWl6cUhQZVRUTVk
+setwd("~/Desktop/teaching_n_learning/2019-03-22_variant_prioritization/")
 
-dbname <- "gemini.db"
-con <- dbConnect(RSQLite::SQLite(), dbname = dbname)
-dbListTables(con)
-dbListFields(con, "variants")
+# download ashkenazim.small_variants.csv
+# https://drive.google.com/open?id=1AiiITUwjlYQIssTWRZ-DTVS3a0_PFKJO 
 
-qrySample <- "select name from samples"
+library(googledrive)
+drive_find(n_max=50, type = "csv")
+#drive_download("~/tutorials/2019_03_variant_prioritization/ashkenazim.small_variants.csv")
+id <- "1AiiITUwjlYQIssTWRZ-DTVS3a0_PFKJO"
+drive_download(as_id(id), overwrite = T)
+drive_download(as_id("https://drive.google.com/open?id=1AiiITUwjlYQIssTWRZ-DTVS3a0_PFKJO"), overwrite = T)
 
-samples <- dbGetQuery(con, qrySample)
-sample <- samples[[1]]
-
-qryReport <- "select 
-        v.ref as Ref,
-        v.alt as Alt,
-        v.chrom as Chrom,
-        v.start+1  as Pos,
-        v.impact as Variation,
-        v.depth as Depth,
-        v.qual_depth as Qual_depth,
-        v.gene as Gene,
-        g.ensembl_gene_id as Ensembl_gene_id,
-        v.clinvar_disease_name as Clinvar,
-        v.transcript as Ensembl_transcript_id,
-        v.aa_length as AA_position,
-        v.exon as Exon,
-        v.pfam_domain as Pfam_domain,
-        v.rs_ids as rsIDs,
-        v.aaf_1kg_all as Maf_1000g,
-        v.aaf_exac_all as Exac_maf,
-        v.max_aaf_all as Maf_all,
-        v.exac_num_het as Exac_het,
-        v.exac_num_hom_alt as Exac_hom_alt,
-        v.sift_score as Sift_score,
-        v.polyphen_score as Polyphen_score,
-        v.cadd_scaled as Cadd_score,
-        v.aa_change as AA_change,
-        from variants v, gene_detailed g
-        where v.transcript=g.transcript and v.gene=g.gene";
-
-variants <- as_tibble(dbGetQuery(con, qryReport))
+variants <- read_csv("ashkenazim.small_variants.csv")
             
-variants_rare_missense <- filter(variants, Variation == "missense_variant",Maf_all < 0.01)
+variants_rare_missense <- filter(variants, Variation == "missense_variant", Maf_all < 0.01)
+
 variants_potentially_deleterious <- filter(variants_rare_missense, Polyphen_score > 0.9)
 
 #explore variation
