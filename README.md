@@ -4,7 +4,7 @@
 Session 8 in DNA-seq bootcamp 2019, CCM, Hospital for Sick Children, Toronto, 2019-03-15.
 * [**Real time genomics analysis with iobio.io toolkit**](https://docs.google.com/presentation/d/1PdSo2VvHyMDbiX_tMLWkxOYLCpYE4dA0HCjmg56LCmo/edit?usp=sharing])\
 Session 8 in DNA-seq bootcamp 2019, CCM, Hospital for Sick Children, Toronto, 2019-03-15.
-* [**Small and structural variant prioritization in R with tidyverse](https://docs.google.com/presentation/d/1SBeRCSlwfsLOLvx5fSDHd1sM2Hu3lwgDSB__TAduuSg/edit?usp=sharing)\
+* [**Small and structural variant prioritization in R with tidyverse**](https://docs.google.com/presentation/d/1SBeRCSlwfsLOLvx5fSDHd1sM2Hu3lwgDSB__TAduuSg/edit?usp=sharing)\
 Session 10 in DNA-seq bootcamp 2019, CCM, Hospital for Sick Children, Toronto, 2019-03-22.
 
 ## Variant annotation and prioritization series
