@@ -25,7 +25,7 @@ drive_find(n_max = 50, type = "csv")
 # drive_download("~/tutorials/2019_03_variant_prioritization/ashkenazim.small_variants.csv")
 # assignment <- Alt -
 id <- "15bYaktk50qD6qeL-LPgm5NSlk4-XFfYq"
-# download by ID
+# download by ID - sometimes you have to do it several times if fails
 drive_download(as_id(id), overwrite = T)
 # download by URL
 drive_download(as_id("https://drive.google.com/open?id=15bYaktk50qD6qeL-LPgm5NSlk4-XFfYq"), overwrite = T)
@@ -104,7 +104,6 @@ variants_chrx <- filter(variants_chrx, Gene != "ARSD")
 variants_chrx <- filter(variants_chrx, Gene != "ESX1")
 # all these variants are not de novos!
 
-
 # select a subset of columns
 colnames(variants)
 variants_de_novo_report <- select(variants_de_novo, c("Position", "Ref", "Alt", "Gene", "Variation",
@@ -121,4 +120,11 @@ variants_hgmd <- filter(wgs_small_variants_tcag, grepl("DM",HGMD_tag))
 
 # exercise: choose your strategy on how to extract pathogenic variants, filter + select with pipe %>% 
 
- 
+# structural variant report - for muscular genes
+drive_download(as_id("https://drive.google.com/open?id=1O2RtjYbP2kyUxd-VAYhb3WPhgilJOmhj"), overwrite = T)
+variants_sv <- read_csv("NA12878.sv.csv")
+
+# sort by lengths decreasing
+variants_sv <- arrange(variants_sv, SVLEN)
+drive_download(as_id("https://drive.google.com/open?id=1WYPGlOMPvxITzKJg6YlWGajNfu92yyIP"), overwrite = T)
+drive_download(as_id("https://drive.google.com/open?id=1WED_JAZJvRFKB3h7MqXSSfjqVT_1Ficr"), overwrite = T)
