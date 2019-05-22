@@ -38,3 +38,11 @@ A tutorial for Systems Biology course organized by M. Gelfand, Moscow State Univ
 * [HBC training tutorials](https://github.com/hbctraining)
 * [Data Visualization by Claus O. Wilke](https://serialmentor.com/dataviz/)
 * [Evolutionary Biology by AS Kondrashov](https://www.youtube.com/watch?v=fKv2UBkfmA0&list=PLfMMXtHYUY1r6ONv8pzOXCIt5BzH7gxPs)
+
+# articles prioritized
+
+## Bulk RNA-seq, DE analysis
+1. Robinson et al 2018. Review. RNA sequencing data: hitchhiker's guide to expression analysis. https://peerj.com/preprints/27283/
+2. HBC 2018. bcbioRNASeq. https://f1000research.com/articles/6-1976/v2.
+
+## Detection of aberrant splicing in Mendelian disease with RNA-seq 
