@@ -45,4 +45,8 @@ A tutorial for Systems Biology course organized by M. Gelfand, Moscow State Univ
 1. Robinson et al 2018. Review. RNA sequencing data: hitchhiker's guide to expression analysis. https://peerj.com/preprints/27283/
 2. HBC 2018. bcbioRNASeq. https://f1000research.com/articles/6-1976/v2.
 
+## Single cell RNA-seq
+1. [A collection of resources from seandavi](https://github.com/seandavi/awesome-single-cell)
+2. https://scrnaseq-course.cog.sanger.ac.uk/website/index.html
+
 ## Detection of aberrant splicing in Mendelian disease with RNA-seq 
