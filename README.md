@@ -48,5 +48,7 @@ A tutorial for Systems Biology course organized by M. Gelfand, Moscow State Univ
 ## Single cell RNA-seq
 1. [A collection of resources from seandavi](https://github.com/seandavi/awesome-single-cell)
 2. https://scrnaseq-course.cog.sanger.ac.uk/website/index.html
+3. https://broadinstitute.github.io/2019_scWorkshop/index.html
+4. https://github.com/SingleCellTranscriptomics/ISMB2018_SingleCellTranscriptomeTutorial
 
 ## Detection of aberrant splicing in Mendelian disease with RNA-seq 
