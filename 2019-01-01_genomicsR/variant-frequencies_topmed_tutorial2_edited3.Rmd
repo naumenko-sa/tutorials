@@ -1,0 +1,92 @@
+---
+title: "Variant frequencies with TopMed"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+Population frequency is an important criterium for assessing the pathogenicity of a variant. The 1000 Genomes Project is no longer is the gold standard, there are bigger datasets. GnomAD is the go-to database to get the most current and reliable data. TopMed is an R package that accesses TopMed data in GnomAD. Not many people are using it, but it is useful and "up and coming" because it allows one to check the maximum frequency. You can find more information about the TopMed package here:  
+* http://bioconductor.org/packages/release/data/annotation/html/MafDb.TOPMed.freeze5.hg19.html  
+* https://bioconductor.org/packages/release/data/annotation/html/SNPlocs.Hsapiens.dbSNP144.GRCh37.html  
+
+In this tutorial, we will read a VCF file into R, subset and re-write it.
+
+The code in the following tutorial is based on Dr. Sergey Naumenko's work available on Github, https://github.com/naumenko-sa/cre/blob/master/cre.topmed.R. `naumenko-sa/cre` is licensed under the MIT License. Annotations and explanations by Dr. Martina Steiner and Heather Gibling are licensed under the GNU General Public License v3.0.
+
+Before we get started with the code, explore the websites for GnomAD and TopMed:  
+* https://gnomad.broadinstitute.org/  
+* https://bravo.sph.umich.edu/freeze5/hg38/  
+
+The next step is to install the TopMed packages, if they haven't been already, and load them:
+```{r results='hide', message=FALSE, warning=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+      install.packages("BiocManager")
+}
+if (!requireNamespace("MafDb.TOPMed.freeze5.hg19", quietly = TRUE)) {
+      BiocManager::install("MafDb.TOPMed.freeze5.hg19")
+}
+if (!requireNamespace("SNPlocs.Hsapiens.dbSNP144.GRCh37", quietly = TRUE)) {
+      BiocManager::install("SNPlocs.Hsapiens.dbSNP144.GRCh37")
+}
+
+library("MafDb.TOPMed.freeze5.hg19")
+library("SNPlocs.Hsapiens.dbSNP144.GRCh37")
+
+# note the genome builds associated with these datasets (GRCh37/hg19)
+```
+
+
+## Look up positional information for a SNP
+The RSID (Reference SNP cluster ID) is an accession number to refer to specific SNPs. It follows the format of this example rs1800730, and allows one to retrieve information about that SNP from dbSNP and other databases.
+
+When we loaded the SNP and MAF databases, they automatically loaded another R package called `GenomicRanges (GRanges)`. GRanges is a way to view positional genomic information in a specified format and is very handy to use. You can learn more about the package here: https://www.rdocumentation.org/packages/GenomicRanges.
+
+When we look up SNP locus information in this tutorial, it is saved as a `GPos` object, which is a standard format for storing genomic positions. A GPos object will have 3 primary columns and some metadata columns. The primary columns are:  
+* seqnames: usually a chromosome name  
+* pos: the nucleotide position  
+* strand: which strand is referenced (+, -, or * for unstranded)  
+
+Metadata columns for SNPs include:  
+* RefSNP_id: the rsID for the SNP  
+* alleles_as_ambig: the IUPAC nucleotide letter that represents the possible alleles at this position (relative to the positive strand)  
+
+Here is the code to get the allele frequency for a RSID via TopMed:
+```{r eval=F}
+# create shorter variable names for the datasets:    
+mafdb <- MafDb.TOPMed.freeze5.hg19
+snpdb <- SNPlocs.Hsapiens.dbSNP144.GRCh37
+
+# give a variable name for a specific SNP or a vector of SNPs of interest:
+rs_id <- c("rs202193903", "rs148649884", "rs6313")
+
+# look up the SNPs in the database (note: this requires a lot of memory, so if you are 
+# getting an error try closing other applications on your computer):
+snp_pos <- snpsById(snpdb, ids = rs_id, ifnotfound = "drop")
+
+# take a look at the results (see output description above):
+snp_pos
+
+# different databases write chromosome names in differnt ways, so modify the SNP 
+# results to match the style of the MAFdb (for example, change 5 to chr5):
+seqlevelsStyle(snp_pos) <- seqlevelsStyle(mafdb)
+
+# take another look at the results and see what changed:
+snp_pos
+
+# get the minor allele frequency for the SNPs, as found in the TOPMed database:
+snp_pos_maf <- gscores(mafdb, snp_pos)
+
+# look at the results and notice the new column:
+snp_pos_maf
+
+# to isolate the MAF values alone, reference the column name:
+maf <- snp_pos_maf$AF
+
+# filter the results to keep only common SNPs (greater than 10% frequency, or 0.1):
+snp_pos_maf_common <- snp_pos_maf[snp_pos_maf$AF > 0.1, ]
+```
+
+Look up the allele frequencies for rs1129038, a SNP associated to blue and brown eye colors as reported by Eiberg et al. Blue eye color in humans may be caused by a perfectly associated founder mutation in a regulatory element located within the HERC2 gene inhibiting OCA2 expression. (Human Genetics, 123(2):177-87, 2008 [http://www.ncbi.nlm.nih.gov/pubmed/18172690])

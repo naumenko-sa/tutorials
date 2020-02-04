@@ -1,0 +1,150 @@
+---
+title: "Variant Annotation"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+In tertiary genome analysis, after a variant caller creates a list of variants in a VCF file, the variants have to be annotated with more information to allow for further filtering and interpretation. One tool to do that is the Variant Annotation package available on Bioconductor.
+
+You can find more information about the Variant Annotation package here:  
+* http://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html
+
+The code in the following tutorial is based on Dr. Sergey Naumenko's work available on Github, https://github.com/naumenko-sa/bioscripts/blob/master/scripts/variants.R. `naumenko-sa/bioscripts` is licensed under the MIT License. Annotations and explanations by Dr. Martina Steiner and Heather Gibling are licensed under the GNU General Public License v3.0.
+
+The Ensembl Variant Effect Predictor (VEP) determines the effect of a variant (SNPs, insertions, deletions, CNVs or structural variants) on genes, transcripts, and protein sequence, as well as regulatory regions.
+
+Input the coordinates of a variants and the nucleotide changes, or variant IDs into the tool to find:  
+* Genes and Transcripts affected by the variants  
+* Location of the variants (e.g. upstream of a transcript, in coding sequence, in non-coding RNA, in regulatory regions)  
+* Consequence of your variants on the protein sequence (e.g. stop gained, missense, stop lost, frameshift)  
+* Known variants that match yours, and associated minor allele frequencies from the 1000 Genomes Project  
+* SIFT and PolyPhen-2 scores for changes to protein sequence (you will learn more about these in silico prediction tools later on in the course).  
+(McLaren W, Gil L, Hunt SE, Riat HS, Ritchie GR, Thormann A, Flicek P, Cunningham F. The Ensembl Variant Effect Predictor. Genome Biology Jun 6;17(1):122. (2016) doi:10.1186/s13059-016-0974-4)
+
+First, explore the Ensembl Variant Effet Predictor tool available here: http://grch37.ensembl.org/Multi/Tools/VEP?db=core
+
+The next step is to install and the Variant Annotation package, if it hasn't been done already:
+```{r results='hide', message=FALSE, warning=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+if (!requireNamespace("VariantAnnotation", quietly = TRUE)) {
+      BiocManager::install("VariantAnnotation")
+}
+
+library(VariantAnnotation)
+```
+
+Note: make sure that the files you use are in the same folder as this Rmd document. Otherwise, use the command `setwd("path/to/your/directory")`.
+
+
+## Exploring VCF files in R
+A GRanges object is similar to the GPos objects we worked with in tutorial 2, but have a value for range instead of position to indicate that more than one nucleotide might be included.
+```{r}
+# read in a vcf from the VariantAnnotation package and save it as the variable 'vcf':
+file <- system.file("extdata", "chr22.vcf.gz", package = "VariantAnnotation")   
+chr22_vcf <- readVcf(file, "hg19")
+
+# a lot of information is stored in the resulting object:
+chr22_vcf 
+
+# access the vcf header information:
+header(chr22_vcf)
+
+# access the samples:
+samples(header(chr22_vcf))
+
+# the SNP information is stored in a GRanges object:
+rowRanges(chr22_vcf)
+
+# get the number of variants:
+length(rowRanges(chr22_vcf))
+
+# get the number of variants that pass the quality filter:
+variants_pass <- rowRanges(chr22_vcf)[rowRanges(chr22_vcf)$FILTER == "PASS", ]
+length(variants_pass)
+
+# get the reference or alternate alleles, and the quality scores:
+ref(chr22_vcf)
+alt(chr22_vcf)
+head(qual(chr22_vcf))
+
+# get the genotypes for each sample for each SNP:
+chr22_genotypes <- geno(chr22_vcf)$GT
+head(chr22_genotypes)
+
+# get details of additional information annotated in the vcf:
+info(header(chr22_vcf))
+
+# manually create a GRanges object with two genomic regions of interest:
+regions <- GRanges(seqnames="22",
+                   ranges = IRanges(start = c(50301422, 50989541),
+                                    end = c(50312106, 51001328),
+                                    names = c("gene1","gene2")))
+
+# create a variable for the index file for the vcf (downloaded when the VariantAnnotation
+# package was installed) and get a subset of the original vcf positions:
+tbx <- TabixFile(file)
+chr22_vcf_subset <- readVcf(tbx, "hg19", param = regions)
+subset_genotypes <- geno(chr22_vcf_subset)$GT
+nrow(subset_genotypes)
+
+# create a vcf of this small subset and save in working directory (also compress it and
+# index it):
+writeVcf(chr22_vcf_subset, "chr22_subset.vcf")
+bgzip("chr22_subset.vcf", "chr22_subset.vcf.gz", overwrite=T)
+indexTabix("chr22_subset.vcf.gz", format="vcf")
+
+# note that indexTabix() is used to actually generate the index file for vcfs in your
+# working directory, whereas Tabixfile() is used to call existing index files and
+# load them into R
+```
+
+
+## Personal genome
+Here we will learn how to read a vcf file into R and subset it based on the genes in a disease panel. The result will be a smaller vcf containing variants located anywhere within the genes of the panel.
+```{r}
+# read panel bed into R and give it column names:
+panel <- read.table("cholestasis.bed", sep = "\t", 
+                    col.names = c("chr", "start", "end", "gene"))
+
+# transform panel genes information into a GRanges object:
+panel_region <- GRanges(seqnames = panel$chr,
+                        ranges = IRanges(start = panel$star,
+                                         end = panel$end,
+                                         names = panel$gene))
+
+# update chromosome names to match vcf format:
+seqlevelsStyle(panel_region) <- "UCSC"
+
+# read vcf file into R:
+vcf_file <- "PGPC_0001_S1.flt.subset.vcf"
+vcf <- readVcf(vcf_file, "hg19")
+
+# bgzip and index the vcf file:
+bgzip("PGPC_0001_S1.flt.subset.vcf", "PGPC_0001_S1.flt.subset.vcf.gz", 
+      overwrite = T)
+indexTabix("PGPC_0001_S1.flt.subset.vcf.gz", format = "vcf")
+
+# read index into R:
+tbx <- TabixFile("PGPC_0001_S1.flt.subset.vcf.gz")
+
+# subset the vcf based on the panel regions:
+vcf_subset <- readVcf(tbx, "hg19", param = panel_region)
+
+# save subsetted vcf to vcf file:
+writeVcf(vcf_subset, "PGPC_0001_S1.flt.subset_cholestatsis.vcf")
+
+# some entries might have more than one ALT allele possible (separated by commas).
+# In order to save the output in a table, expand the vcf so each entry has as
+# single ALT allele:
+vcf_subset_expanded <- expand(vcf_subset)
+
+# save subsetted expanded vcf (just the variants) to tsv file:
+write.table(rowRanges(vcf_subset_expanded), file = "cholestasis_variants.tsv", 
+            sep = "\t", quote = F, row.names = F)
+```

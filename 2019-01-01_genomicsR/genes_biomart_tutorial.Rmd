@@ -1,0 +1,657 @@
+---
+title: "Exploring genes with biomaRt"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+BioMart software allows you to access various databases (COSMIC cancer database, Ensembl Genomes, HapMap, UniProt and many others) from one tool. The project originated at the European Bioinformatics Institute EBI. We will explore how to access data on the Ensembl servers. Ensembl was created in the context of the Human Genome Project to create annotations of genomic regions. BioMart allows you to make complex queries and download large datasets from Ensembl. biomaRt is an R package that has been developed to make queries through R (Durinck S, Spellman P, Birney E, Huber W (2009). Mapping identifiers for the integration of genomic datasets with the R/Bioconductor package biomaRt. Nature Protocols, 4, 1184-1191.)
+
+You can find more information about the biomaRt package here:  
+* http://bioconductor.org/packages/release/bioc/html/biomaRt.html  
+* https://www.bioconductor.org/packages/devel/bioc/vignettes/biomaRt/inst/doc/biomaRt.html  
+(Bioconductor is a package repository that provides open source software for bioinformatics).  
+
+The code and the sample dataset in the following tutorial is based on Dr. Sergey Naumenko's work available on Github, https://github.com/naumenko-sa/bioscripts/blob/master/gene_panels/genes.R. `naumenko-sa/bioscripts` is licensed under the MIT license. Annotations and explanations by Dr. Martina Steiner and Heather Gibling are licensed under the GNU General Public License v3.0.
+
+
+### Ensembl website
+In this tutorial, we will focus on retrieving information from the Ensembl database. Before we access the database from the command line, let's explore the web-interface: http://grch37.ensembl.org/index.html  
+* Check your favorite gene or LIS1 (PAFAH1B1)  
+* Explore the same gene in GRCh38 ("View in current Ensembl" link at the bottom of the page)  
+* Explore the same gene in GTEx: https://gtexportal.org/home/gene/PAFAH1B1 (The Genotype-Tissue Expression (GTEx) project is a public resource to study tissue-specific gene expression and regulation. Available data include gene expression, QTLs, and histology images)
+
+
+### Installation
+To get started on the command line, we start by installing biomaRt. The function may take a while if the package has not been installed previously. Start running the function ("run current chunk" green arrow in R studio) and answer the follwing question: _What does this function do?_ 
+
+```{r results='hide', message=FALSE, warning=FALSE}
+    if (!requireNamespace("BiocManager", quietly = TRUE)) {
+      install.packages("BiocManager")
+    }
+    if (!requireNamespace("biomaRt", quietly = TRUE)) {
+      BiocManager::install("biomaRt", version="3.8")
+    }
+library(biomaRt)
+```
+
+
+## Explore biomaRt
+Let's explore biomaRt. Run the code line by line (click on the first line and press Ctrl+Enter to run it. Press Ctrl+Enter again to run the next line (the cursor will have automatically advanced to the next line)). We can first ask for a list of "marts", which are different available databases. _Why are there only a few entries?_ 
+
+We will select one of the marts from the default server, namely the data for GRCh37 (note that GRCh38 is the default). We then ask biomaRt to give us information about the available data in that database in the form of a list of datasets, and select one of the datasets. _Explore what the filters are that you can apply to the dataset. To do that, run the code below line by line and have a look at the different variables._
+
+Here is the code line by line to do all of the above:
+```{r}
+# see which marts (databases) are available:
+listMarts()
+
+# select a database (Ensembl genes for grch37) and save it to a variable named 'mart_37':
+mart_37 <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", host = "grch37.ensembl.org")
+
+# get which datasets are available in our mart and save the list to a variable named 'datasets_37':
+datasets_37 <- listDatasets(mart_37)
+
+# if we type the variable name on its own we can see its contents:
+datasets_37
+
+# update our mart_37 variable to specify a dataset (homosapiens genes) within the previ-
+#ously selected mart (ENSEMBL_MART_ENSEMBL database). Biomart requires you to specify a 
+#dataset within a database when you want to retrieve specific genomic information:
+mart_37 <- useDataset(mart_37, dataset = "hsapiens_gene_ensembl")
+
+# get the list of attributes for our dataset and save the list to a variable:
+attributes_37 <- listAttributes(mart_37)
+
+# there are a lot of attributes! (1453 rows/attributes and 3 columns):
+dim(attributes_37)
+
+# we can view the first few with the function head():
+head(attributes_37)
+
+# or we can view them all in a scrollable spreadsheet (opens in a new tab):
+View(attributes_37)
+
+# get the list of filters for our dataset and save the list to a variable:
+filters_37 <- listFilters(mart_37)
+
+# make a query (ask biomart for specific information) using the getBM() function:
+chromosomes_37 <- getBM(attributes = c("chromosome_name"), 
+                        mart = mart_37)
+
+# another query example:
+genes <- getBM(attributes = c("ensembl_gene_id", "external_gene_name", "chromosome_name"),
+               filters = c("chromosome_name"),
+               values = list("22"),
+               mart = mart_37)
+
+# (queries will be explained in detail shortly)
+```
+    
+The second half of the code is to get a little more information about the entries in that dataset (below we will discuss the structure of the query in more detail). We create a variable that stores information about chromosomes. Inspect the information about this variable. _How many chromosomes did you expect? How many are there in the dataset? How can you explain the discrepancy?_
+
+We also create a variable that stores information about genes. The variable is actually a dataframe (table of information). _How many entries are in the genes matrix, and what do the entries look like? Based on the code below, what does this number mean?_ 
+
+
+
+## Queries on biomaRt
+biomaRt allows for complex queries. To know what the search terms are, you have to explore the information about attributes and filters of the datasets in more detail.
+
+The getBM() function you encountered above is the main query function in biomaRt. It has four main arguments:  
+* attributes: is a vector of attributes that one wants to retrieve (the output of the query).  
+* filters: is a vector of filters that one will use as input to the query (to narrow down the amount of data returned).  
+* values: is a vector of values for the filters (specifically what you want to be returned). If multple filters are in use, the values argument requires a list of values where each position in the list corresponds to the position of the filters in the filters argument.  
+* mart: is an object of class Mart, which is created by the useMart() or useDataset() function. This should be a specific dataset within a database.  
+
+Example: Filters define a restriction on the query. If you want to restrict the output to all genes located on the human X chromosome then the filter chromosome_name can be used with value "X". The listFilters() function shows you all available filters in the selected dataset.
+
+
+## Comparing different reference genomes
+With the information above you should now understand the following code. Run the code line by line and have a look at the resulting data tables for filters and attributes. _What is the difference between the two?_
+```{r}
+# instead of selecting the database (mart) first with useMart() and then updating our va-
+#riable to specify the dataset with useDataset(), we are doing these both in a single 
+#step with useMart():
+mart_38 <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
+
+# we can still see all available datasets in the "ENSEMBL_MART_ENSEMBL" mart:
+datasets_38 <- listDatasets(mart_38)
+
+attributes_38 <- listAttributes(mart_38)
+filters_38 <- listFilters(mart_38)
+```
+
+After running the code above line by line, you should have variables for both GRCh37 and GRCh38 defined. 
+_Compare the variables for both genome builds. What is the difference?_
+_When should you use which genome assembly?_ _
+
+Let's explore the listAttributes() function in more detail. Open the help page for the function by typing ?listAttributes and look at the description, usage, and arguments (note that you can look at the help page for any function by running ?function_name). Arguments are values that can be specified for a function. Some are required and some are optional. Under 'Usage', you will see something like `function_name(argument1, argument2, argument3 = value1)`. Any default values for arguments can be identified as those that appear after an equals sign. If there is no equals sign for an argument, then usually you must specify a value for that argument when you use the function.  
+Looking at the usage and arguments for listAttributes() you see the following arguments:  
+* mart : nothing specified, so you must provide a mart.  
+* page : nothing specified (but a value is not actually required--the default behavior is to provide all pages. In biomaRt, a page is a grouping of attributes. If you want to return a specific type of attribute, we can specify the type with page).  
+* what : the columns returned in the table of attributes. Under 'Usage' it says `what = c("name", "description", "page")`, which are the three default columns returned if you don't specify anything for this argument (like we did before). Under 'Arguments' (where each argument is described in more detail), we see that there is another possible value "fullDescription"  
+
+Reminder: `c()` is a function that combines items into a single vector. If you want to specify more than one item/value in an argument you can put them all in a vector (as with `what = c("name", "description", "page")` above).
+```{r}
+# make a copy of the mart_37 information to play around with without overwriting mart_37:
+my_mart <- mart_37
+
+# open the listAttributes() help page:
+?listAttributes
+
+# get the attributes for our mart, but include an additional column (compare this to attributes_37):
+my_attributes <- listAttributes(my_mart, 
+                                what = c("name", "description", "fullDescription", "page"))
+
+# it might be usefull to get only a certain type of attribute by specifying a page. Get 
+# the possible values for page by asking for only the unique values of the page column 
+# of the above attributes table:
+unique(my_attributes$page)
+
+# for example, we can return only the attributes related to sequences:
+my_attributes_sequences <- listAttributes(my_mart,
+                                          page = "sequences",
+                                          what = c("name", "description", "fullDescription", "page"))
+
+# compare the number of attributes returned for all pages and for just the sequences page:
+dim(my_attributes)
+dim(my_attributes_sequences)
+
+# the other biomart functions work in a similar way:
+my_filters <- listFilters(my_mart, 
+                          what = c("name", "description", "fullDescription"))
+```
+
+_Write code that allows you to tell how many genes there are overall in the genome for the GRCh37 and GRCh38 genome build. Why is the number different?_
+
+
+
+## Example queries and use cases
+We will now go over Marts other than the human genome, and look at different examples of how to use biomaRt.
+
+
+### Explore data from other organisms
+Here is how you can generate a query for an organism other than humans. Notice how the process is similar to generating a query for human data.
+```{r}
+# see the list of databases to find the name of the mouse database:
+listMarts()
+
+mart_mouse <- useMart(biomart = "ENSEMBL_MART_MOUSE")
+datasets_mouse <- listDatasets(mart_mouse)
+
+# use a specific mouse strain for the dataset:
+mart_mouse <- useDataset(mart_mouse, dataset = "mmc57bl6nj_gene_ensembl")
+
+attributes_mouse <- listAttributes(mart_mouse, 
+                                   what = c("name", "description", "fullDescription", "page"))
+unique(attributes_mouse$page)
+filters_mouse <- listFilters(mart_mouse,
+                             what = c("name", "description", "fullDescription"))
+
+# example query: genes on mouse chromosome X
+mouse_genes <- getBM(attributes = c("ensembl_gene_id", "chromosome_name"), 
+                     filters = c("chromosome_name"),
+                     values = list("X"),
+                     mart = mart_mouse)
+```
+
+
+### Human SNP information
+Here is how you can generate a query for SNP information.
+```{r}
+# see the list of databases to find the name of the SNP database:
+listMarts()
+
+mart_SNP <- useMart(biomart = "ENSEMBL_MART_SNP")
+datasets_SNP <- listDatasets(mart_SNP)
+
+# specify the human SNP dataset:
+mart_SNP <- useDataset(mart_SNP, dataset = "hsapiens_snp")
+
+attributes_SNP <- listAttributes(mart_SNP, 
+                                 what = c("name", "description", "fullDescription", "page"))
+filters_SNP <- listFilters(mart_SNP, what = c("name", "description", "options"))
+
+# example query: SNPs in a specific chromosomal region (10,000bp-20,000bp on chr 1)
+SNPs <- getBM(attributes = c("refsnp_id", "chr_name", "chrom_start", "chrom_end"),
+              filters = c("chromosomal_region"),
+              values = list("1:10000:20000"),
+              mart = mart_SNP)
+```
+
+_Why do some SNPs in the sample query have a different chrom_start and chrom_end value?_ 
+
+
+### Gene function
+Here is how you can generate a query for gene function. Note how the attribute names are not necessarily the same for the different marts (ex: 'chr_name' in the SNP mart vs 'chromosome_name' in the gene function mart). It's a good idea to check the lists of attributes and filters before writing a query for a new dataset. Including 'options' in the list of filters often tells you which values can be used for specific filters.
+```{r}
+# see the list of databases to find the name of the gene function database:
+listMarts()
+
+mart_func <- useMart(biomart = "ENSEMBL_MART_FUNCGEN")
+datasets_func <- listDatasets(mart_func)
+
+# specify the human regulart feature dataset:
+mart_func <- useDataset(mart_func, dataset = "hsapiens_regulatory_feature")
+
+attributes_func <- listAttributes(mart_func, 
+                                  what = c("name", "description", "fullDescription", "page"))
+filters_func <- listFilters(mart_func, 
+                            what = c("name", "description", "options"))
+
+# example query: promoter genes on chromosome 21
+reg_func <- getBM(attributes = c("chromosome_name", "chromosome_start", "chromosome_end", "feature_type_name", "activity"),
+              filters = c("chromosome_name", "regulatory_feature_type_name"),
+              values = list("21", "promoter"),
+              mart = mart_func)
+```
+
+_Inspect variable reg_func. What is a poised promoter?_
+
+
+### Write a file with gene descriptions
+You can save your query results as a file on your computer. It's good practice to organize all your files for a project in a folder. Your working directory is the folder where R will look for files to read in or to save files. A csv file is a comma-separated values file, which is a way for the computer to know how to separate values into columns for tabular data. `row.names = F` will not save the row numbers as a column in your file, and `quote = F` will not put quotation marks around words or strings in your file (this makes it easier to look at the saved file).
+```{r}
+# check the location of your current working directory:
+getwd()
+
+# set your working directory to a useful location with setwd("path/to/folder"). If you 
+# want to save everything to your desktop you can uncomment the following line:
+# setwd("~/Desktop)
+
+# make a query to get Ensembl gene IDs and descriptions:
+ensembl_description <- getBM(attributes = c("ensembl_gene_id",
+                                              "external_gene_name",
+                                              "description"),
+                               mart = mart_38)
+
+# save the above query results to a file named 'ensembl_description.csv' in your working directory:
+write.csv(ensembl_description, file = "ensembl_description.csv", row.names = F, quote = F)
+```
+
+
+### Write a file with a description of GO terms
+The attribute 'name_1006' is GO_term, as seen in the 'description' column of listAttributes(mart_38).
+```{r}
+# retrieving GO_term takes a while for all genes, so we will just use chrX: 
+ensembl_description_go <- getBM(attributes=c("ensembl_gene_id",
+                                            "external_gene_name",
+                                            "description",
+                                            "name_1006"),
+                               filters = c("chromosome_name"),
+                               values = list("X"),
+                               mart = mart_38)
+
+write.csv(ensembl_description_go, "ensembl_description_go.csv", row.names = F, quote = F)
+
+head(ensembl_description_go)
+```
+_How many genes are in the resulting file? How many rows are there?_  
+
+
+### Get a gene name from a Swissprot ID
+If you have the ID from another database, you can use biomart to find the matching Ensembl gene ID. This example uses an ID from the Swissprot protein database.
+```{r}
+# instead of entering the value directly in the query below (values = "P62701"), we can 
+# save the value to a variable and enter the variable as the value. This makes it easy 
+# to use this code for new SwissprotIDs as we only have to update the value of the variable:
+swissprot_id <- "P62701"
+gene <- getBM(attributes = c("ensembl_gene_id", "external_gene_name", "uniprotswissprot"),
+              filters = c("uniprotswissprot"),
+              values = swissprot_id,
+              mart = mart_37)
+
+# extract the name of the gene by selecting the value from the appropriate column of our 
+# query results:
+gene_name <- gene$external_gene_name
+gene_name
+```
+
+
+### Create a file with protein coding genes
+Not every row in our query results will have a value for every column. We can further refine these results based on our needs by subsetting our data. Subsetting a dataframe is generally performed with square brackets or dollar signs:
+
+```
+data_frame[x, y]            # returns row x and column y
+data_frame[1:5, c(2, 5)]    # returns rows 1 to 5 and columns 2 and 5
+data_frame[3:5, ]           # returns rows 3 to 5 and all columns
+data_frame$ColumnA          # returns all rows for the column named 'ColumnA'
+```
+
+For example, we can remove rows that don't have refseq_mrna IDs:
+```{r}
+protein_coding_genes <- getBM(attributes = c("ensembl_gene_id",
+                                             "refseq_mrna",
+                                             "external_gene_name"),
+                              filters = c("biotype"),
+                              values = list("protein_coding"),
+                              mart = mart_38)
+
+# rename the columns of our query results to be more informative:
+colnames(protein_coding_genes) <- c("Ensembl_gene_id", "Refseq_transcript_id", "external_gene_name")
+
+# update the variable protein_coding_genes to be a subset of the results that retains only
+# the rows that have a value for the column Refseq_transcript_id ( != '' means not equal 
+# to an empty string/no value):
+protein_coding_genes <- protein_coding_genes[protein_coding_genes$Refseq_transcript_id != '', ]
+
+write.csv(protein_coding_genes, file = "refseq_transcripts.csv", row.names = F, quote = F)
+```
+_How many different protein isoforms do you expect in the human genome overall? How many entries are in the csv?_
+
+_Have a look at the RYR1 gene in the csv or in the protein-coding-genes data table. Compare the gene IDs and transcript IDs. Does this make sense, and why/why not?_
+
+
+
+### Get start and end coordinates of all exons of a gene and create a BED file
+A BED (Browser Extensible Data) file is a text file used to represent genomic regions of interest. This can include individual SNPs or genes. They are commonly used by genome browsers, or visual representations of the genome, such as the UCSC Genome Browser (https://genome.ucsc.edu/cgi-bin/hgGateway).
+
+A BED file is tab-separated (tabs separate the columns, similar to how commas separate csv files described earlier) and must contain these three columns:  
+* Chromosome: the name of the chromosome  
+* Start Position: the starting coordinate of the genomic feature  
+* End Position: the last coordinate of the genomic feature  
+
+The positions should be relative to the features being stored in the bed file. If it is a list of genes, they should be gene start and end positions. If it is a list of exons, they should be exon start and stop positions.
+
+Up to nine additional columns may be included, the most useful of which is the name of the genomic feature. The name should be relative to the features being stored in the bed file. If it is a list of genes, they should be gene IDs (or gene names, but not both). If it is a list of exons, they should be exon IDs.
+
+Generally BED files are ordered (first by chromosome, then by starting position), and do not have column names. More information of additional columns and BED files in general can be found here: https://useast.ensembl.org/info/website/upload/bed.html
+
+For your general information: The indexing of BED files is different from the indexing of the Ensembl database. Ensembl and many other databases start counting from 1 (1-based indexing), which means they consider the very first nucleotide on a chromosome to be 1. BED files use 0-based indexing, which means they consider the very first nucleotide on a chromosome to be 0. The end positions are also not inclusive, meaning a SNP could be referred to being at position 99-100 in a BED file, whereas Ensembl would say the SNP is at position 100-100. This often causes a lot of confusion in bioinformatics because coordinates might need to be converted between file formats! _For the purposes of this tutorial and your assignment, we will use the Ensembl coordinates and will not worry about converting them for the BED files._
+
+An example of a BED file (that we will create) might look like this:
+
+```
+chr1   100500    100500    SNP_1
+chr1   200750    201800    Gene_1
+chr2   100000    103000    Gene_2
+chr2   375200    375200    SNP_2
+```
+
+For this section, we will read a file into R as our input, which will be a list of genes associated with a disease. The input list should be located in your working directory (if it isn't, please move the file). The output will be a bed file of the genes and coordinates associated with the disease. We will create a query to get the coordinates only for the genes of interest (those in the input list) by filtering the entire biomart data on the input list of genes.
+```{r eval=F}
+input_file_name <- "lupus.csv"
+gene_ids <- read.csv(input_file_name, stringsAsFactors = F)
+
+# examine the input list and see which gene ID types are available:
+head(gene_ids)
+
+# Ensembl IDs are in column 1 and external gene names are in column 2. Either can be used 
+# to filter the query, but let's use the Ensembl IDs:
+disease_genes <- getBM(
+  attributes = c("chromosome_name", "start_position", "end_position",
+                 "ensembl_gene_id"),
+  filters = c("ensembl_gene_id"),
+  values = gene_ids$ensembl_gene_id,
+  mart = mart_38)
+
+# create a variable for the output file that uses the same name as the input file but 
+# changes the extension to '.bed':
+output_file_name <- gsub(".csv", ".bed", input_file_name)
+
+# the list is currently sorted by the order of our filter (Ensembl IDs):
+head(disease_genes)
+
+# BED files are generally sorted by genomic order. We can approximate that by ordering
+# the dataframe on chromosome name first, then start position second:
+disease_genes_sorted <- disease_genes[order(disease_genes$chromosome_name, disease_genes$start_position), ]
+
+# save the dataframe as a BED file in your working directory. The default for write.table() 
+# is to separate columns with spaces, but we can specify that we want them separated by 
+# tabs with sep="\t":
+write.table(disease_genes_sorted, output_file_name,
+            sep = "\t", quote = F, row.names = F, col.names = F)
+```
+Note: because our disease list contains genes on autosomal and sex chromosomes, ordering in R won't work numerically and all chromosomes that start with the same digit will be sorted together (ex: 1, 10, 11 ...). In actual applications it would be wise to use the bedtools software to properly sort the BED file, but we won't worry about this for the purposes of this tutorial and the assignment.
+
+
+
+### Get coding and noncoding transcripts with their Ensembl, RefSeq, and UCSC IDs
+We will use the X chromosome as an example:
+```{r "for students before edits"}
+# get entries for chromosome X:
+transcripts_X <- getBM(attributes = c("ensembl_transcript_id", "refseq_mrna", "refseq_ncrna",
+                                    "ucsc", "external_gene_name", "external_transcript_name", "transcript_length"),
+                     filters = "chromosome_name",
+                     values = list("X"),
+                     mart = mart_38)
+
+# subset/filter the results to keep only entries that have either a refseq_mrna or 
+# refseq_ncrna ID (| means 'or'):
+ensembl_refseq_X <- transcripts_X[(transcripts_X$refseq_mrna != '') | (transcripts_X$refseq_ncrna != ''), ]
+write.csv(ensembl_refseq_X, file = "ensembl_refseq_X.csv", row.names = F, quote = F)
+
+# search for the XIST gene in the results ( == means equals/identical to):
+ensembl_refseq_X[ensembl_refseq_X$external_gene_name == "XIST", ]
+
+# get the longest transcript in the results (order by decreasing so longest is first):
+ensembl_refseq_X_ordered <- ensembl_refseq_X[order(ensembl_refseq_X$transcript_length, decreasing = T), ]
+ensembl_refseq_X_ordered[1, ]
+```
+
+Run the code above and note how many entries there are in the data table. The code above filters for genes on the X chromosome. Change the code to give you the data table for the complete human genome (this might take a couple of minutes to retrieve the results). _How many entries do you have now?_ In this new data table, search for the CLN3 gene and compare the entries. _What do you notice?_ Modify the code to show you what chromosome the gene is on, and other useful information.
+
+
+
+### Get coding regions (CDS) for genes
+To get consensus coding regions (CCDS) of genes, use the filter 'with_ccds'. (https://www.ncbi.nlm.nih.gov/projects/CCDS/CcdsBrowse.cgi). Some genes do not have CCDS while they are coding, i.e. B4GALT1, ISPD, LARGE. Some genes instead have an Ensembl Human Translation ID (or both, the two lists are overlapping but not identical). Here, we will only explore with_ccds.
+```{r}
+chromosome <- "X"
+
+ccds_genes_chr <- getBM(attributes = c("ensembl_gene_id", "external_gene_name", 
+                                       "ens_hs_translation", "ccds"),
+                        filters = c("chromosome_name", "with_ccds"),  
+                        values = list(chromosome, T),
+                        mart = mart_38)
+```
+
+
+### Get the sequence of a gene as a FASTA file
+Biomart can also be used to obtain the sequences of genes or genomic regions of interest using the `getSequence()` function. We can use this function to create fasta files. Remember that fasta files consist of a header in one line and a sequence (nucleotide or protein) in the next line:
+
+```
+> example
+ATAGGACGTACAGTGTAACACCA
+```
+
+Use the `?getSequence` command to get more information about the available options for the argument `seqType`. 
+```{r}
+# get the exons and introns of a gene given the Ensembl ID:
+seq <- getSequence(id = "ENSG00000172062",
+                  type = "ensembl_gene_id",
+                  seqType = "gene_exon_intron", 
+                  mart = mart_38)
+
+# write the sequence to a fasta file in your working directory, first by writing the 
+# header and then by appending (with append=T) the sequence to the file with the header:
+write("> SMN1", "SMN1.fasta")
+write(seq$gene_exon_intron, "SMN1.fasta", append = T)
+
+# get the peptide sequence for SMN1:
+peptide <- getSequence(id = "ENSG00000172062",
+                      type = "ensembl_gene_id",
+                      seqType = "peptide", 
+                      mart = mart_38)
+
+# get the cDNA sequence for SMN1:
+cdna <- getSequence(id = "ENSG00000172062",
+                      type ="ensembl_gene_id",
+                      seqType = "cdna", 
+                      mart = mart_38)
+
+# are the number of results the same for the peptide and cdna queries? look up transcript 
+#information to form a hypothesis as to why or why not:
+SMN1_transcripts <- getBM(attributes = c("ensembl_transcript_id", "refseq_mrna", "ccds", "ensembl_peptide_id", "refseq_ncrna",
+                                     "external_gene_name", "external_transcript_name"),
+                     filters = "external_gene_name",
+                     values = "SMN1",
+                     mart = mart_38)
+```
+
+
+
+##Additional examples that you may work through outside of class
+
+
+### Example of an error in an early genome build
+Inspect the variable lsp1_bug_37 and see what chromosome(s) the exons are on. Change the reference genome to GRCh38 and re-run the code to check if there are exons on different chromosomes in the newer genome assembly.
+```{r}
+# extract information for the gene LSP1 using mart_37:
+lsp1_bug_37 <- getBM(attributes = c('ensembl_gene_id','ensembl_transcript_id',
+                                 'transcript_count','ensembl_exon_id',
+                                 'chromosome_name','exon_chrom_start',
+                                 'exon_chrom_end','genomic_coding_start',
+                                 'genomic_coding_end','external_gene_name'),
+                  filters = c('external_gene_name'),
+                  values = list('LSP1'),
+                  mart = mart_37)
+```
+_LSP1 corresponds to two genes and has exons on chr11 and chr13 - a bug - fixed in GRCh38._
+
+
+
+### Print genomic coding regions and exclude untranslated regions (UTRs): Get exon coordinates
+This function retrieves all of the genes on a given chromosome and provides the gene IDs, transcript IDs, exon IDs, exon coordinates, and genomic coding coordinates. Run this block to declare the function:
+```{r}
+# write a function to get all of the genes on a chromosome and relevant coding and 
+# exon infomation. The function works for one chromosome at a time because of biomart
+# webservice's timeout (it takes too long to try the entire genome at once):
+get_exon_coordinates_chr <- function(my_chromosome, my_mart){
+    genes_for_chr <- getBM(attributes = c('ensembl_gene_id','ensembl_transcript_id','transcript_count',
+                                       'ensembl_exon_id','chromosome_name','exon_chrom_start',
+                                       'exon_chrom_end','genomic_coding_start','genomic_coding_end',
+                                       'external_gene_name'),
+                        filters = c('chromosome_name'),
+                        values = list(my_chromosome),
+                        mart = my_mart)
+    
+    return(genes_for_chr)
+}
+```
+
+Use the function on chromosome 18. Because we are also asking for exon IDs in the query, the results will contain multiple rows for each gene, since genes generally have multiple exons. We will then filter the query to retain only the entries for coding regions.
+```{r}
+chr18_exon_coordinates <- get_exon_coordinates_chr(18, mart_38)
+
+# examine results and notice that some rows have 'NA' (not available) values for 
+# genomic_coding_start/end:
+head(chr18_exon_coordinates)
+
+# remove these noncoding exons (UTRs) by omitting rows with NA values:
+chr18_exon_coordinates_coding <- na.omit(chr18_exon_coordinates)
+
+# save the entire query to a table:
+write.table(chr18_exon_coordinates_coding, "chr18_exon_coordinates_coding.txt", quote = F, row.names = F)
+
+# save only the coding gene IDs to a text file:
+write.table(unique(chr18_exon_coordinates_coding$ensembl_gene_id), "chr18_coding_genes_enseml_ids.txt", 
+            quote = F, row.names = F, col.names = F)
+
+# select only the columns that are found in a BED file:
+chr18_exon_coordinates_coding_bed <- subset(chr18_exon_coordinates_coding,
+                                        select = c("chromosome_name",
+                                                   "genomic_coding_start",
+                                                   "genomic_coding_end",
+                                                   "ensembl_exon_id"))
+
+# sort and save as a BED file:
+chr18_exon_coordinates_coding_bed <- chr18_exon_coordinates_coding_bed[
+  order(chr18_exon_coordinates_coding_bed$chromosome_name, chr18_exon_coordinates_coding_bed$genomic_coding_start), ]
+
+write.table(chr18_exon_coordinates_coding_bed, "chr18_coding_exons.bed", 
+            sep = "\t", quote = F, row.names = F, col.names = F)
+
+# some exons are very short--1bp! These have identical coordinates for the 
+# genomic_coding_start and genomic_coding_end:
+weird_1bp_exons <- chr18_exon_coordinates_coding_bed[chr18_exon_coordinates_coding_bed$genomic_coding_start == chr18_exon_coordinates_coding_bed$genomic_coding_end, ]
+```
+
+In the "chr18_exon_coordinates_coding" variable search for the GATA6 gene. _What is the difference between the attributes "exon_chrom_start" and "genomic_coding start"?_ 
+
+
+If you have time and are interested, you can iterate over all chromosomes to retrieve all genes. The function takes about 5 min to run for all chromosomes (do not include MT, the mitochondrial genome is problematic in CCDS).
+```{r}
+# initiate dataframe with results for chromosome 1:
+all_exon_coordinates <- get_exon_coordinates_chr(1, mart_38)
+
+# iterate over the remaining chromsomes and add each to the dataframe 
+# all_exon_coordinates:
+for (chr in c(seq(2,22),'X','Y')) {
+  temp <- get_exon_coordinates_chr(chr, mart_38)
+  all_exon_coordinates <- rbind(temp, all_exon_coordinates)
+  print(paste("finished chromosome", chr, sep = " "))
+}
+```
+
+
+
+### Get coordinates of all protein coding genes without duplicate records
+This code is provided for your information, but we will not be covering this section in detail during the tutorial.
+```{r}
+genes_info <- getBM(attributes = c("chromosome_name", "start_position", "end_position",
+                              "external_gene_name", "ensembl_gene_id"),
+                 filters = c("biotype"), 
+                 values = list("protein_coding"),
+                 mart = mart_38)
+
+# remove transcripts placed on patches (future alternate haplotypes):
+genes_info <- genes_info[grep('PATCH', genes_info$chromosome_name, invert=T), ]
+# remove HSCHR (alternate haplotypes):
+genes_info <- genes_info[grep('HSCHR', genes_info$chromosome_name, invert=T), ]
+
+# after that some genes still have multiple records, i.e. ABCF2:
+# 7	151211484	151227205	ABCF2	ENSG00000033050
+# 7	151207837	151227166	ABCF2	ENSG00000285292
+
+# we can sort the query by external_gene_name and then by ensembl_ID, 
+# and then keep only the first entry:
+genes_info <- genes_info[order(genes_info$external_gene_name, genes_info$ensembl_gene_id), ]
+genes_info <- genes_info[!duplicated(genes_info$external_gene_name), ]
+
+# reorder table in (roughly) genomic order:
+genes_info <- genes_info[order(genes_info$chromosome_name, genes_info$start_position), ]
+```
+
+
+
+### Get Ensembl Gene IDs by gene names
+You don't have to understand the following code in detail, but this function can be quite useful if you have a list of gene names and want to get the Ensembl Gene IDs. It shows how you can write a function to do many similar queries quickly without rewriting the query every time.
+```{r eval=FALSE, include=FALSE}
+if (!requireNamespace("dplyr", quietly = TRUE)) {
+      install.packages("dplyr")
+}
+
+get_ensembl_gene_ids_by_gene_names = function(input_gene_names, keep_duplicates = F) {
+  library(dplyr)
+  # query that returns Ensembl gene IDs and gene names, filtering based on the input list of genes:
+  ensembl_genes <- getBM(attributes = c("ensembl_gene_id", "external_gene_name"),
+                        filters = "external_gene_name",
+                        values = input_gene_names,
+                        mart = mart_38)
+  
+  # order results by external name first, then Ensembl ID second:
+  ensembl_genes <- ensembl_genes[order(ensembl_genes$external_gene_name, ensembl_genes$ensembl_gene_id), ]
+    
+  if (keep_duplicates == T) {
+    #keep all ensembl IDs for manual curation, but combine them into a single row:
+    ensembl_genes <- ensembl_genes %>% 
+      group_by(external_gene_name) %>% 
+      summarise(ensembl_gene_id = paste(ensembl_gene_id, collapse = ","))
+    }
+    else {
+      # if there are multiple ensembl IDs for a gene name, keep the first entry after sorting:
+      ensembl_genes <- ensembl_genes[!duplicated(ensembl_genes$external_gene_name), ]
+    }
+  
+  return(ensembl_genes)
+}
+
+# test the function (multiple genes need to be inside a vector):
+get_ensembl_gene_ids_by_gene_names(c("BRCA2", "BRCA1"))
+get_ensembl_gene_ids_by_gene_names("C4A", keep_duplicates = T)
+```
+
+
