@@ -1,3 +1,8 @@
+# bioinformatics in Ukrainian - Біоінформатика українською
+
+* [Ukraian MOH - by Inna Dubchak - 4 video](https://www.youtube.com/watch?v=HsBBIJEkf3k): Intro, Alignment, Phylogenies, Blast
+* [GenomicsUA](https://www.youtube.com/c/NGOGenomicsUA/videos)
+
 # tutorials I taught
 
 * [**The basics of IGV**](https://docs.google.com/presentation/d/1dUNRB76aZpQgJjPqR_nhzPKztfd9uV5biOTprONc7MU/edit?usp=sharing)\
