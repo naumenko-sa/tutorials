@@ -1,6 +1,6 @@
 # bioinformatics in Ukrainian - Біоінформатика українською
 
-* [Ukraian MOH - by Inna Dubchak - 4 video](https://www.youtube.com/watch?v=HsBBIJEkf3k): Intro, Alignment, Phylogenies, Blast
+* [Ukrainian MOH - by Inna Dubchak - 4 video](https://www.youtube.com/watch?v=HsBBIJEkf3k): Intro, Alignment, Phylogenies, Blast
 * [GenomicsUA](https://www.youtube.com/c/NGOGenomicsUA/videos)
 * [Сбірка геномів](https://ukr.legatechnics.com/de-novo-genome-assembly-what-every-biologist-should-know-53879722)
 
