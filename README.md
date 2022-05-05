@@ -3,6 +3,7 @@
 * [Ukrainian MOH - by Inna Dubchak - 4 video](https://www.youtube.com/watch?v=HsBBIJEkf3k): Intro, Alignment, Phylogenies, Blast
 * [GenomicsUA](https://www.youtube.com/c/NGOGenomicsUA/videos)
 * [Збірка геномів](https://ukr.legatechnics.com/de-novo-genome-assembly-what-every-biologist-should-know-53879722)
+* [Біоінформатика - початок - 1](https://docs.google.com/presentation/d/1xSRd35HmPJmgP-lU1w4Wg0AraD8RQX53mXFh4hIUErk/edit?usp=sharing)
 
 # tutorials I taught
 
